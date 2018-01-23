@@ -37,7 +37,9 @@ let fakeSpendings = statement
       "amount": amount === undefined
         || Number.parseFloat(amount)
     };
-  });
+  })
+  .filter(spending => spending.merchant !== undefined)
+  .sort((a, b) => a.merchant >= b.merchant ? 1 : -1);
 
 // TODO: load this from a common
 // TODO: convert to absolute imports
