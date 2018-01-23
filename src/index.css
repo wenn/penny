@@ -3,3 +3,12 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+td, th {
+  text-align: left;
+}
+
+th.currency, 
+  td.currency {
+  text-align: right
+}
