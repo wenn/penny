@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 
 import "./Spendings.css"
+import Spending from "./Spending"
+import SpendingTable from "./SpendingTable"
+import SpendingRecord from "./SpendingRecord"
 
-let statement = `
-11/30/2017,"WG006085000000 11/30 #000031899 WITHDRWL Cardtronics CCSB CHICAGO IL","-63.00","3915.50"
+let statement = `11/30/2017,"WG006085000000 11/30 #000031899 WITHDRWL Cardtronics CCSB CHICAGO IL","-63.00","3915.50"
 11/30/2017,"WG006085000000 11/30 #000031899 WITHDRWL Cardtronics CCSB CHICAGO IL FEE","-2.50","3913.00"
 12/01/2017,"CHECKCARD 1130 VENTRA AUTOLOAD 877-669-8368 IL 24445007335001090067754","-20.00","3893.00"
 12/01/2017,"Vi Nguyen Bill Payment","-170.00","3723.00"
@@ -31,15 +33,13 @@ let fakeSpendings = statement
       .splice(0, 3)
       .map(v => v === undefined || v.replace(/['"]+/g, ""));
 
-    return {
-      "datetime": datetime,
-      "merchant": merchant,
-      "amount": amount === undefined
-        || Number.parseFloat(amount)
-    };
+    return new Spending(
+      new Date(datetime),
+      merchant,
+      amount === undefined || Number.parseFloat(amount)
+    );
   })
   .filter(spending => spending.merchant !== undefined)
-  .sort((a, b) => a.merchant >= b.merchant ? 1 : -1);
 
 // TODO: load this from a common
 // TODO: convert to absolute imports
@@ -56,54 +56,67 @@ function hashCode(str) {
   return hash;
 }
 
-class Spendings
-  extends Component {
+class Sorter {
 
-  render() {
-    const items = fakeSpendings.map(spending => {
+  static sort(key) {
+    let isDesc = /^-/.test(key)
+    let parsedKey = key.replace(/^[-+]/, "")
 
-      let spendingKey = hashCode(
-        spending.datetime
-        + spending.merchant
-        + spending.amount
-      )
-
-      return < SpendingItem key={spendingKey}
-        datetime={spending.datetime}
-        merchant={spending.merchant}
-        amount={spending.amount}
-      />
-    });
-
-    return (
-      <SpendingTable items={items} />
-    );
+    return (a, b) =>
+      isDesc
+        ? (a[parsedKey] <= b[parsedKey] ? 1 : -1)
+        : (a[parsedKey] >= b[parsedKey] ? 1 : -1);
   }
 }
 
-function SpendingTable(props) {
-  return (
-    <table>
-      <tbody>
-        <tr>
-          <th>Date</th>
-          <th>Merchant</th>
-          <th class="currency">Amount</th>
-        </tr>
-        {props.items}
-      </tbody>
-    </table>
-  );
-}
+class Spendings
+  extends Component {
 
-function SpendingItem(props) {
-  return (
-    <tr>
-      <td>{props.datetime}</td>
-      <td>{props.merchant}</td>
-      <td class="currency">{props.amount}</td>
-    </tr>
-  )
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      sort: Spending.Enum.MERCHANT
+    }
+  }
+
+  renderRecords(spendings) {
+    return spendings
+      .sort(Sorter.sort(this.state.sort))
+      .map(spending => {
+
+        let spendingKey = hashCode(
+          spending.datetime
+          + spending.merchant
+          + spending.amount
+        )
+
+        return (
+          <SpendingRecord key={spendingKey}
+            datetime={spending.datetime.toDateString()}
+            merchant={spending.merchant}
+            amount={spending.amount}
+          />
+        );
+      });
+  }
+
+  headerHandleClick(header) {
+    this.setState({
+      sort: header
+    })
+
+    return this.render()
+  }
+
+  render() {
+    return (
+      <SpendingTable
+        records={this.renderRecords(fakeSpendings)}
+        headOnClick={column => this.headerHandleClick(column)}
+      />
+    );
+  }
 }
 
 export default Spendings
