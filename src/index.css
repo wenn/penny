@@ -6,6 +6,7 @@ body {
 
 td, th {
   text-align: left;
+  cursor: default;
 }
 
 th.currency, 

@@ -39,7 +39,7 @@ let fakeSpendings = statement
       amount === undefined || Number.parseFloat(amount)
     );
   })
-  .filter(spending => spending.merchant !== undefined)
+  .filter(spending => spending.merchant !== undefined);
 
 // TODO: load this from a common
 // TODO: convert to absolute imports
@@ -59,13 +59,17 @@ function hashCode(str) {
 class Sorter {
 
   static sort(key) {
-    let isDesc = /^-/.test(key)
-    let parsedKey = key.replace(/^[-+]/, "")
+    let isDesc = /^-/.test(key);
+    let parsedKey = key.replace(/^[-+]/, "");
 
     return (a, b) =>
       isDesc
         ? (a[parsedKey] <= b[parsedKey] ? 1 : -1)
         : (a[parsedKey] >= b[parsedKey] ? 1 : -1);
+  }
+
+  static toggleOrder(order) {
+    return order === "+" ? "-" : "+";
   }
 }
 
@@ -73,11 +77,22 @@ class Spendings
   extends Component {
 
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
-      sort: Spending.Enum.MERCHANT
-    }
+      sort: "+" + Spending.Enum.MERCHANT
+    };
+  }
+
+  headerHandleClick(header) {
+    let current = this.state.sort;
+    let order = Sorter.toggleOrder(current.charAt(0));
+
+    this.setState({
+      sort: order + header
+    });
+
+    return this.render();
   }
 
   renderRecords(spendings) {
@@ -89,7 +104,7 @@ class Spendings
           spending.datetime
           + spending.merchant
           + spending.amount
-        )
+        );
 
         return (
           <SpendingRecord key={spendingKey}
@@ -99,14 +114,6 @@ class Spendings
           />
         );
       });
-  }
-
-  headerHandleClick(header) {
-    this.setState({
-      sort: header
-    })
-
-    return this.render()
   }
 
   render() {

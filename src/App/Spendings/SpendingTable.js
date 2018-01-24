@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import Spending from "./Spending"
 
 function SpendingHeader(props) {
-  let title = String(props.value)
+  let title = String(props.value);
   let decoratedTitle = title
     .charAt(0)
     .toUpperCase()
-    + title.slice(1)
+    + title.slice(1);
 
   return (
     <th onClick={() => props.onClick(props.value)}>
