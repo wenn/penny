@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 
 import "components/App/Spendings/Spendings.css"
+import Sorter from "utils/Sorter"
+
 import Spending from "components/App/Spendings/Spending"
 import SpendingTable from "components/App/Spendings/SpendingTable"
 import SpendingRecord from "components/App/Spendings/SpendingRecord"
@@ -21,38 +23,6 @@ let fakeSpendings = Statement
     );
   })
   .filter(spending => spending.merchant !== undefined);
-
-// TODO: load this from a common
-// TODO: convert to absolute imports
-function hashCode(str) {
-  var hash = 0;
-  if (str.length === 0) {
-    return hash;
-  }
-  for (var i = 0; i < str.length; i++) {
-    let char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-  return hash;
-}
-
-class Sorter {
-
-  static sort(key) {
-    let isDesc = /^-/.test(key);
-    let parsedKey = key.replace(/^[-+]/, "");
-
-    return (a, b) =>
-      isDesc
-        ? (a[parsedKey] <= b[parsedKey] ? 1 : -1)
-        : (a[parsedKey] >= b[parsedKey] ? 1 : -1);
-  }
-
-  static toggleOrder(order) {
-    return order === "+" ? "-" : "+";
-  }
-}
 
 class Spendings
   extends Component {
@@ -81,14 +51,8 @@ class Spendings
       .sort(Sorter.sort(this.state.sort))
       .map(spending => {
 
-        let spendingKey = hashCode(
-          spending.datetime
-          + spending.merchant
-          + spending.amount
-        );
-
         return (
-          <SpendingRecord key={spendingKey}
+          <SpendingRecord key={spending.hashCode()}
             datetime={spending.datetime.toDateString()}
             merchant={spending.merchant}
             amount={spending.amount}
