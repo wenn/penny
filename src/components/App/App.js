@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
-import logo from './logo.svg';
-import './App.css';
+import logo from 'components/App/logo.svg';
+import 'components/App/App.css';
 
-import Spendings from './Spendings/Spendings'
+import Spendings from 'components/App/Spendings/Spendings'
 
 class App
   extends Component {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Spending from "./Spending"
+import Spending from "components/App/Spendings/Spending"
 
 function SpendingHeader(props) {
   let title = String(props.value);
@@ -15,6 +15,14 @@ function SpendingHeader(props) {
   );
 }
 
+function SpendingRow(props) {
+  return (
+    <tr onClick={() => props.onClick(props.value)}>
+      props.value
+    </tr>
+  );
+}
+
 class SpendingTable
   extends React.Component {
 
@@ -22,7 +30,7 @@ class SpendingTable
     return (
       <SpendingHeader
         value={value}
-        onClick={this.props.headOnClick}
+        onClick={() => this.props.onClick(value)}
       />
     );
   }
