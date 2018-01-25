@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 
 import "components/App/Spendings/Spendings.css"
 import Sorter from "utils/Sorter"
+import Statement from "components/App/Spendings/Fixture"
 
 import Spending from "components/App/Spendings/Spending"
-import SpendingTable from "components/App/Spendings/SpendingTable"
-import SpendingRecord from "components/App/Spendings/SpendingRecord"
-import Statement from "components/App/Spendings/Fixture"
+import Table from "components/App/Spendings/Table"
+import Record from "components/App/Spendings/Record"
 
 let fakeSpendings = Statement
   .split('\n')
@@ -52,10 +52,8 @@ class Spendings
       .map(spending => {
 
         return (
-          <SpendingRecord key={spending.hashCode()}
-            datetime={spending.datetime.toDateString()}
-            merchant={spending.merchant}
-            amount={spending.amount}
+          <Record key={spending.hashCode()}
+            value={spending}
           />
         );
       });
@@ -63,7 +61,7 @@ class Spendings
 
   render() {
     return (
-      <SpendingTable
+      <Table
         records={this.renderRecords(fakeSpendings)}
         onClick={column => this.headerHandleClick(column)}
       />
