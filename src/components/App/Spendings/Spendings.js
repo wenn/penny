@@ -2,27 +2,10 @@ import React, { Component } from 'react';
 
 import "components/App/Spendings/Spendings.css"
 import Sorter from "utils/Sorter"
-import Statement from "components/App/Spendings/Fixture"
 
 import Spending from "components/App/Spendings/Spending"
 import Table from "components/App/Spendings/Table"
 import Record from "components/App/Spendings/Record"
-
-let fakeSpendings = Statement
-  .split('\n')
-  .map(line => {
-    let [datetime, merchant, amount] = line
-      .split(',')
-      .splice(0, 3)
-      .map(v => v === undefined || v.replace(/['"]+/g, ""));
-
-    return new Spending(
-      new Date(datetime),
-      merchant,
-      amount === undefined || Number.parseFloat(amount)
-    );
-  })
-  .filter(spending => spending.merchant !== undefined);
 
 class Spendings
   extends Component {
@@ -31,8 +14,13 @@ class Spendings
     super(props);
 
     this.state = {
-      sort: "+" + Spending.Enum.MERCHANT
+      sort: "+" + Spending.Enum.MERCHANT,
+      selected: {}
     };
+  }
+
+  isSelected(spending) {
+    return spending.hashCode() in this.state.selected
   }
 
   headerHandleClick(header) {
@@ -46,23 +34,42 @@ class Spendings
     return this.render();
   }
 
+  recordHandleClick(spending) {
+    const hashCode = spending.hashCode();
+    const selected = this.state.selected;
+    let current = Object.assign({}, selected);
+
+    hashCode in current
+      ? delete current[hashCode]
+      : current[hashCode] = spending;
+
+    this.setState({
+      selected: current
+    }, () => console.log(this.state.selected));
+  }
+
   renderRecords(spendings) {
     return spendings
       .sort(Sorter.sort(this.state.sort))
       .map(spending => {
+        const selected = this.isSelected(spending)
 
         return (
           <Record key={spending.hashCode()}
+            selected={selected}
             value={spending}
+            onClick={() => this.recordHandleClick(spending)}
           />
         );
       });
   }
 
   render() {
+    let spendings = this.props.value.slice();
+
     return (
       <Table
-        records={this.renderRecords(fakeSpendings)}
+        records={this.renderRecords(spendings)}
         onClick={column => this.headerHandleClick(column)}
       />
     );
