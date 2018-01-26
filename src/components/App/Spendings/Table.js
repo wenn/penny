@@ -41,6 +41,10 @@ class Table
     super(props);
 
     this.state = { mouse: undefined };
+
+
+    // TODO: Figure out a more graceful way to add and remove events
+    //  Make the function objects? or variables here?
     document.addEventListener(Event.MOVE, this.handleMouseMove.bind(this));
     document.addEventListener(Event.UP, this.handleMouseUp.bind(this));
   }
@@ -65,14 +69,16 @@ class Table
 
     if (mouse.event === Event.DOWN) {
       const end = new Coord(e.clientX, e.clientY);
-      const x = end.x - mouse.start.x
-      const y = end.y - mouse.start.y
+      const width = Math.abs(end.x - mouse.start.x)
+      const height = Math.abs(end.y - mouse.start.y)
+      const left = Math.min(end.x, mouse.start.x)
+      const top = Math.min(end.y, mouse.start.y) + window.scrollY
 
       const style = {
-        left: mouse.start.x,
-        top: mouse.start.y,
-        width: x,
-        height: y
+        left: left,
+        top: top,
+        width: width,
+        height: height
       }
 
       ReactDOM.render(
