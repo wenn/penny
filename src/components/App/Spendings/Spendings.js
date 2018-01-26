@@ -43,9 +43,7 @@ class Spendings
       ? delete current[hashCode]
       : current[hashCode] = spending;
 
-    this.setState({
-      selected: current
-    }, () => console.log(this.state.selected));
+    this.setState({ selected: current });
   }
 
   renderRecords(spendings) {
