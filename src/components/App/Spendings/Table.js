@@ -27,13 +27,10 @@ class Mouse {
 
 function Box(props) {
   return (
-    <div
-      className="selection-box"
-      style={props.style}
-    >
-    </div>
+    <div className="selection-box" style={props.style}> </div>
   );
 }
+
 class Table
   extends React.Component {
 
@@ -41,12 +38,7 @@ class Table
     super(props);
 
     this.state = { mouse: undefined };
-
-
-    // TODO: Figure out a more graceful way to add and remove events
-    //  Make the function objects? or variables here?
-    document.addEventListener(Event.MOVE, this.handleMouseMove.bind(this));
-    document.addEventListener(Event.UP, this.handleMouseUp.bind(this));
+    [this.addEvents, this.removeEvents] = this.newEvents(this);
   }
 
   renderHeader(value, cls) {
@@ -58,39 +50,58 @@ class Table
     );
   }
 
+  newEvents(self) {
+    const move = self.handleMouseMove.bind(self);
+    const up = self.handleMouseUp.bind(self);
+
+    const add = function () {
+      document.addEventListener(Event.MOVE, move);
+      document.addEventListener(Event.UP, up);
+    };
+
+    const remove = function () {
+      document.removeEventListener(Event.MOVE, move);
+      document.removeEventListener(Event.UP, up);
+    };
+
+    return [add, remove];
+  }
+
   handleMouseDown(e) {
     const start = new Coord(e.clientX, e.clientY);
+
     this.setState({ mouse: new Mouse(start, Event.DOWN) });
+    this.addEvents();
   }
 
   handleMouseMove(e) {
     e.preventDefault();
     const mouse = Object.assign({}, this.state.mouse);
+    const end = new Coord(e.clientX, e.clientY);
+    const topOffset = window.scrollY
 
-    if (mouse.event === Event.DOWN) {
-      const end = new Coord(e.clientX, e.clientY);
-      const width = Math.abs(end.x - mouse.start.x)
-      const height = Math.abs(end.y - mouse.start.y)
-      const left = Math.min(end.x, mouse.start.x)
-      const top = Math.min(end.y, mouse.start.y) + window.scrollY
+    const width = Math.abs(end.x - mouse.start.x)
+    const height = Math.abs(end.y - mouse.start.y)
+    const left = Math.min(end.x, mouse.start.x)
+    const top = Math.min(end.y, mouse.start.y) + topOffset
 
-      const style = {
-        left: left,
-        top: top,
-        width: width,
-        height: height
-      }
-
-      ReactDOM.render(
-        <Box style={style} />,
-        document.getElementById('proxy')
-      );
+    const style = {
+      left: left,
+      top: top,
+      width: width,
+      height: height
     }
+
+    ReactDOM.render(
+      <Box style={style} />,
+      document.getElementById('proxy')
+    );
   }
 
   handleMouseUp(e) {
     this.setState({ mouse: new Mouse(undefined, Event.UP) });
     ReactDOM.unmountComponentAtNode(document.getElementById('proxy'))
+    this.removeEvents();
   }
 
   render() {
