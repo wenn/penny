@@ -1,4 +1,4 @@
-class Hashable {
+const Hashable = base => class extends base {
   _value = undefined;
 
   hashCode() {

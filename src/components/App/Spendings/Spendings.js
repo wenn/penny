@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
 
 import "components/App/Spendings/Spendings.css"
-import Sorter from "utils/Sorter"
-
-import Spending from "components/App/Spendings/Spending"
 import Table from "components/App/Spendings/Table"
-import Record from "components/App/Spendings/Record"
 
 class Spendings
   extends Component {
@@ -14,64 +10,42 @@ class Spendings
     super(props);
 
     this.state = {
-      sort: "+" + Spending.Enum.MERCHANT,
-      selected: {}
-    };
+      spendings: props
+        .value
+        .reduce((object, spending) =>
+          Object
+            .assign(object, { [spending.hashCode()]: spending }), {}),
+    }
   }
 
-  isSelected(spending) {
-    return spending.hashCode() in this.state.selected
+  toggleSelect(spending) {
+    const selected = spending.getSelected() ? false : true;
+    spending.setSelected(selected);
+
+    return spending;
   }
 
-  headerHandleClick(header) {
-    let current = this.state.sort;
-    let order = Sorter.toggleOrder(current.charAt(0));
+  handleSelect(spending) {
+    const spendings = Object.assign({}, this.state.spendings);
+    spendings[spending.hashCode()] = this.toggleSelect(spending);
+    this.setState({ spendings: spendings });
 
-    this.setState({
-      sort: order + header
-    });
-
-    return this.render();
-  }
-
-  recordHandleClick(spending) {
-    const hashCode = spending.hashCode();
-    const selected = this.state.selected;
-    let current = Object.assign({}, selected);
-
-    hashCode in current
-      ? delete current[hashCode]
-      : current[hashCode] = spending;
-
-    this.setState({ selected: current });
-  }
-
-  renderRecords(spendings) {
-    return spendings
-      .sort(Sorter.sort(this.state.sort))
-      .map(spending => {
-        const selected = this.isSelected(spending)
-
-        return (
-          <Record key={spending.hashCode()}
-            selected={selected}
-            value={spending}
-            onClick={() => this.recordHandleClick(spending)}
-          />
-        );
-      });
+    this.render();
   }
 
   render() {
-    let spendings = this.props.value.slice();
+    const spendings = Object.assign({}, this.state.spendings);
+    const value = Object
+      .keys(spendings)
+      .map(k => spendings[k]);
 
     return (
       <Table
-        records={this.renderRecords(spendings)}
-        onClick={column => this.headerHandleClick(column)}
+        value={value}
+        onSelect={record => this.handleSelect(record)}
       />
     );
   }
 }
 
-export default Spendings
+export default Spendings;

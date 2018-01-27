@@ -2,7 +2,7 @@ import React from 'react';
 
 function Record(props) {
   const spending = props.value;
-  const className = props.selected ? "selected" : ""
+  const className = spending.getSelected() ? "selected" : ""
 
   return (
     <tr

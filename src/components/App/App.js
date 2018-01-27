@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import logo from 'components/App/logo.svg';
 import 'components/App/App.css';
 
-import Statement from "components/App/Spendings/Fixture"
-import Spendings from 'components/App/Spendings/Spendings'
-import Spending from 'components/App/Spendings/Spending'
+import Statement from 'components/App/Spendings/Fixture';
+import Spendings from 'components/App/Spendings/Spendings';
+import Spending from 'components/App/Spendings/Spending';
 
 const fakeSpendings = Statement
   .split('\n')

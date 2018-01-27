@@ -1,8 +1,11 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
+
+import Sorter from "utils/Sorter"
 
 import Spending from "components/App/Spendings/Spending"
 import Header from "components/App/Spendings/Header"
-import ReactDOM from 'react-dom';
+import Record from "components/App/Spendings/Record"
 
 class Coord {
   constructor(x, y) {
@@ -37,15 +40,30 @@ class Table
   constructor(props) {
     super(props);
 
-    this.state = { mouse: undefined };
+    this.state = {
+      mouse: undefined,
+      sort: "+" + Spending.Enum.MERCHANT
+    };
+
     [this.addEvents, this.removeEvents] = this.newEvents(this);
+  }
+
+  headerHandleClick(header) {
+    let current = this.state.sort;
+    let order = Sorter.toggleOrder(current.charAt(0));
+
+    this.setState({
+      sort: order + header
+    });
+
+    return this.render();
   }
 
   renderHeader(value, cls) {
     return (
       <Header
         value={value}
-        onClick={() => this.props.onClick(value)}
+        onClick={() => this.headerHandleClick(value)}
       />
     );
   }
@@ -76,6 +94,7 @@ class Table
 
   handleMouseMove(e) {
     e.preventDefault();
+
     const mouse = Object.assign({}, this.state.mouse);
     const end = new Coord(e.clientX, e.clientY);
     const topOffset = window.scrollY
@@ -104,22 +123,33 @@ class Table
     this.removeEvents();
   }
 
+  renderRecords(spendings) {
+    return spendings
+      .sort(Sorter.sort(this.state.sort))
+      .map(spending => {
+        return (
+          <Record key={spending.hashCode()}
+            value={spending}
+            onClick={() => this.props.onSelect(spending)}
+          />
+        );
+      });
+  }
+
   render() {
     return (
-      <table
-        onMouseDown={this.handleMouseDown.bind(this)}
-      >
+      <table onMouseDown={this.handleMouseDown.bind(this)}>
         <tbody>
           <tr>
             {this.renderHeader(Spending.Enum.DATETIME)}
             {this.renderHeader(Spending.Enum.MERCHANT)}
             {this.renderHeader(Spending.Enum.AMOUNT)}
           </tr>
-          {this.props.records}
+          {this.renderRecords(this.props.value)}
         </tbody>
       </table>
     );
   }
 }
 
-export default Table
+export default Table;

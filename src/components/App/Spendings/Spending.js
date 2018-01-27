@@ -1,7 +1,9 @@
-import Hashable from "utils/Hashable"
+import mixin from "utils/Mixin";
+import Selectable from "utils/Selectable";
+import Hashable from "utils/Hashable";
 
 class Spending
-  extends Hashable {
+  extends mixin(Hashable, Selectable) {
 
   static Enum = Object.freeze({
     DATETIME: "datetime",
@@ -28,4 +30,4 @@ class Spending
   }
 };
 
-export default Spending
+export default Spending;
