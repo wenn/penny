@@ -124,6 +124,12 @@ class Table
     this.removeEvents();
   }
 
+  toggleSelect(spending) {
+    const selected = spending.getSelected() ? false : true;
+    spending.setSelected(selected);
+    this.props.onSelect(spending);
+  }
+
   renderRecords(spendings) {
     return spendings
       .sort(Sorter.sort(this.state.sort))
@@ -131,7 +137,7 @@ class Table
         return (
           <Record key={spending.hashCode()}
             value={spending}
-            onClick={() => this.props.onSelect(spending)}
+            onClick={() => this.toggleSelect(spending)}
           />
         );
       });

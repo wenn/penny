@@ -18,16 +18,9 @@ class Spendings
     }
   }
 
-  toggleSelect(spending) {
-    const selected = spending.getSelected() ? false : true;
-    spending.setSelected(selected);
-
-    return spending;
-  }
-
   handleSelect(spending) {
     const spendings = Object.assign({}, this.state.spendings);
-    spendings[spending.hashCode()] = this.toggleSelect(spending);
+    spendings[spending.hashCode()] = spending;
     this.setState({ spendings: spendings });
 
     this.render();
