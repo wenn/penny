@@ -1,21 +1,23 @@
 table {
+  border-collapse: collapse;
+  border: none;
   width: 90%;
   margin: 5%;
 }
 
 td { 
   color: #666; 
-  font-family: Courier New, Courier, monospace;
 }
 
 td, th {
-  border: 0px;
   padding: 10px;
+  text-align: left;
+  cursor: default;
 }
 
 th.currency, 
   td.currency {
-  text-align: right
+  text-align: right;
 }
 
 tr.selected {

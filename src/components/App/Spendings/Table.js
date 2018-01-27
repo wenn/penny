@@ -139,7 +139,8 @@ class Table
 
   render() {
     return (
-      <table onMouseDown={this.handleMouseDown.bind(this)}>
+      <table
+        onMouseDown={this.handleMouseDown.bind(this)}>
         <tbody>
           <tr>
             {this.renderHeader(Spending.Enum.DATETIME)}
