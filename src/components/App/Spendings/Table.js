@@ -63,6 +63,7 @@ class Table
     return (
       <Header
         value={value}
+        className={cls}
         onClick={() => this.headerHandleClick(value)}
       />
     );
@@ -143,7 +144,7 @@ class Table
           <tr>
             {this.renderHeader(Spending.Enum.DATETIME)}
             {this.renderHeader(Spending.Enum.MERCHANT)}
-            {this.renderHeader(Spending.Enum.AMOUNT)}
+            {this.renderHeader(Spending.Enum.AMOUNT, 'currency')}
           </tr>
           {this.renderRecords(this.props.value)}
         </tbody>

@@ -8,7 +8,9 @@ function Header(props) {
     + title.slice(1);
 
   return (
-    <th onClick={() => props.onClick(props.value)}>
+    <th
+      className={props.className}
+      onClick={() => props.onClick(props.value)}>
       {decoratedTitle}
     </th>
   );

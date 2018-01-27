@@ -1,13 +1,25 @@
 table {
-  width: 100%;
+  width: 90%;
+  margin: 5%;
 }
 
-td {
-  border: 0px;
-  padding: 5px 0px;
+td { 
+  color: #666; 
+  font-family: Courier New, Courier, monospace;
 }
+
+td, th {
+  border: 0px;
+  padding: 10px;
+}
+
+th.currency, 
+  td.currency {
+  text-align: right
+}
+
 tr.selected {
-  background: #ddadcf
+  background: powderblue;
 }
 
 div.selection-box {
