@@ -3,37 +3,11 @@ import ReactDOM from 'react-dom';
 
 import Sorter from "utils/Sorter"
 
-import Spending from "components/App/Spendings/Spending"
-import Header from "components/App/Spendings/Header"
-import Record from "components/App/Spendings/Record"
-
-class Coord {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
-  }
-}
-
-const Event = Object.freeze({
-  UNKNOWN: "unknown",
-  DOWN: "mousedown",
-  MOVE: "mousemove",
-  UP: "mouseup",
-});
-
-class Mouse {
-
-  constructor(start, event) {
-    this.start = start;
-    this.event = event;
-  }
-}
-
-function Box(props) {
-  return (
-    <div className="selection-box" style={props.style}> </div>
-  );
-}
+import Spending from "components/App/Spendings/Spending";
+import Header from "components/App/Spendings/Header";
+import Record from "components/App/Spendings/Record";
+import Box from "components/App/Spendings/SelectionBox";
+import { Event, Coord, Mouse } from "components/Mouse";
 
 class Table
   extends React.Component {
@@ -97,31 +71,20 @@ class Table
   handleMouseMove(e) {
     e.preventDefault();
 
-    const mouse = Object.assign({}, this.state.mouse);
-    const end = new Coord(e.clientX, e.clientY);
-    const topOffset = window.scrollY
-
-    const width = Math.abs(end.x - mouse.start.x)
-    const height = Math.abs(end.y - mouse.start.y)
-    const left = Math.min(end.x, mouse.start.x)
-    const top = Math.min(end.y, mouse.start.y) + topOffset
-
-    const style = {
-      left: left,
-      top: top,
-      width: width,
-      height: height
-    }
+    const start = this.state.mouse.coord;
+    const moved = new Coord(e.clientX, e.clientY);
+    const topOffset = window.scrollY;
+    const boxStyle = this.selectionBoxDimension(start, moved, topOffset);
 
     ReactDOM.render(
-      <Box style={style} />,
+      <Box style={boxStyle} />,
       document.getElementById('proxy')
     );
   }
 
   handleMouseUp(e) {
     this.setState({ mouse: new Mouse(undefined, Event.UP) });
-    ReactDOM.unmountComponentAtNode(document.getElementById('proxy'))
+    ReactDOM.unmountComponentAtNode(document.getElementById('proxy'));
     this.removeEvents();
   }
 
@@ -136,7 +99,26 @@ class Table
     if (this.state.mouse.event === Event.DOWN) {
       spending.setSelected(false);
       this.props.onSelect(spending);
+
+      // const moved = this.state.mouseMoved.coord;
+      // console.log("el", e)
+      // console.log("el", e.target)
+      // console.log("mouse", [moved.x, moved.y])
     }
+  }
+
+  selectionBoxDimension(start, moved, topOffset) {
+    const width = Math.abs(moved.x - start.x);
+    const height = Math.abs(moved.y - start.y);
+    const left = Math.min(moved.x, start.x);
+    const top = Math.min(moved.y, start.y) + topOffset;
+
+    return {
+      left: left,
+      top: top,
+      width: width,
+      height: height
+    };
   }
 
   toggleSelect(spending) {
