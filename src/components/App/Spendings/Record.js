@@ -7,8 +7,9 @@ function Record(props) {
   return (
     <tr
       className={className}
-      onClick={props.onClick}
-    >
+      onMouseLeave={props.onMouseLeave}
+      onMouseEnter={props.onMouseEnter}
+      onClick={props.onClick}>
       <td>{spending.datetime.toDateString()}</td>
       <td>{spending.merchant}</td>
       <td className="currency">{spending.amount}</td>

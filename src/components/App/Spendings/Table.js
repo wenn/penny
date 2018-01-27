@@ -15,9 +15,10 @@ class Coord {
 }
 
 const Event = Object.freeze({
+  UNKNOWN: "unknown",
   DOWN: "mousedown",
-  UP: "mouseup",
   MOVE: "mousemove",
+  UP: "mouseup",
 });
 
 class Mouse {
@@ -41,7 +42,7 @@ class Table
     super(props);
 
     this.state = {
-      mouse: undefined,
+      mouse: new Mouse(undefined, Event.UNKNOWN),
       sort: "+" + Spending.Enum.MERCHANT
     };
 
@@ -124,6 +125,20 @@ class Table
     this.removeEvents();
   }
 
+  handleMouseEnter(e, spending) {
+    if (this.state.mouse.event === Event.DOWN) {
+      spending.setSelected(true);
+      this.props.onSelect(spending);
+    }
+  }
+
+  handleMouseLeave(e, spending) {
+    if (this.state.mouse.event === Event.DOWN) {
+      spending.setSelected(false);
+      this.props.onSelect(spending);
+    }
+  }
+
   toggleSelect(spending) {
     const selected = spending.getSelected() ? false : true;
     spending.setSelected(selected);
@@ -137,6 +152,8 @@ class Table
         return (
           <Record key={spending.hashCode()}
             value={spending}
+            onMouseLeave={(e) => this.handleMouseLeave.bind(this)(e, spending)}
+            onMouseEnter={(e) => this.handleMouseEnter.bind(this)(e, spending)}
             onClick={() => this.toggleSelect(spending)}
           />
         );
