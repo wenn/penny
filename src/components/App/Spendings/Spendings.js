@@ -9,6 +9,7 @@ class Spendings
   constructor(props) {
     super(props);
 
+    // TODO: mess up sorting
     this.state = {
       spendings: props
         .value

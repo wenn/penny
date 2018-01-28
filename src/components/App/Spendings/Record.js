@@ -6,8 +6,9 @@ function Record(props) {
 
   return (
     <tr
+      id={spending.hashCode()}
       className={className}
-      onMouseLeave={props.onMouseLeave}
+      onMouseLeave={props.onMouseOver}
       onMouseEnter={props.onMouseEnter}
       onClick={props.onClick}>
       <td>{spending.datetime.toDateString()}</td>

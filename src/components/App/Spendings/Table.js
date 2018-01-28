@@ -73,8 +73,7 @@ class Table
 
     const start = this.state.mouse.coord;
     const moved = new Coord(e.clientX, e.clientY);
-    const topOffset = window.scrollY;
-    const boxStyle = this.selectionBoxDimension(start, moved, topOffset);
+    const boxStyle = this.selectionBoxDimension(start, moved);
 
     ReactDOM.render(
       <Box style={boxStyle} />,
@@ -97,17 +96,44 @@ class Table
 
   handleMouseLeave(e, spending) {
     if (this.state.mouse.event === Event.DOWN) {
-      spending.setSelected(false);
-      this.props.onSelect(spending);
 
-      // const moved = this.state.mouseMoved.coord;
-      // console.log("el", e)
-      // console.log("el", e.target)
-      // console.log("mouse", [moved.x, moved.y])
+      const el = document.getElementById(spending.hashCode());
+      const elOffset = this.offsetOfDocument(el);
+
+      const start = this.state.mouse.coord;
+      const moved = new Coord(e.clientX, e.clientY);
+      const box = this.selectionBoxDimension(start, moved)
+
+      const min = box.top;
+      const max = box.top + box.height;
+      const elMin = elOffset.top
+      const elMax = elOffset.top + el.height
+      const stillIn = (max >= elMin && elMin >= min)
+        || (max >= elMax && elMax >= min);
+
+      if (!stillIn) {
+        spending.setSelected(false);
+        this.props.onSelect(spending);
+      }
     }
   }
 
-  selectionBoxDimension(start, moved, topOffset) {
+  offsetOfDocument(el) {
+    const rect = el.getBoundingClientRect();
+    const doc = document.documentElement;
+    const scrollLeft = window.pageXOffset || doc.scrollLeft;
+    const scrollTop = window.pageYOffset || doc.scrollTop;
+
+    return {
+      top: rect.top + scrollTop,
+      left: rect.left + scrollLeft
+    }
+  }
+
+  selectionBoxDimension(start, moved) {
+    const doc = document.documentElement;
+    const topOffset = window.pageYOffset || doc.scrollTop;
+
     const width = Math.abs(moved.x - start.x);
     const height = Math.abs(moved.y - start.y);
     const left = Math.min(moved.x, start.x);
@@ -134,7 +160,7 @@ class Table
         return (
           <Record key={spending.hashCode()}
             value={spending}
-            onMouseLeave={(e) => this.handleMouseLeave.bind(this)(e, spending)}
+            onMouseOver={(e) => this.handleMouseLeave.bind(this)(e, spending)}
             onMouseEnter={(e) => this.handleMouseEnter.bind(this)(e, spending)}
             onClick={() => this.toggleSelect(spending)}
           />
@@ -148,8 +174,8 @@ class Table
         onMouseDown={this.handleMouseDown.bind(this)}>
         <tbody>
           <tr>
-            {this.renderHeader(Spending.Enum.DATETIME)}
-            {this.renderHeader(Spending.Enum.MERCHANT)}
+            {this.renderHeader(Spending.Enum.DATETIME, '')}
+            {this.renderHeader(Spending.Enum.MERCHANT, '')}
             {this.renderHeader(Spending.Enum.AMOUNT, 'currency')}
           </tr>
           {this.renderRecords(this.props.value)}
