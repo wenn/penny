@@ -2,14 +2,15 @@ import React from 'react';
 
 function Record(props) {
   const spending = props.value;
-  const className = spending.getSelected() ? "selected" : ""
+  const className =
+    (spending.getSelected() ? "selected" : "")
+    + " noselect"
 
   return (
     <tr
       id={spending.hashCode()}
       className={className}
-      onMouseLeave={props.onMouseOver}
-      onMouseEnter={props.onMouseEnter}
+      onMouseOver={props.onMouseEnter}
       onClick={props.onClick}>
       <td>{spending.datetime.toDateString()}</td>
       <td>{spending.merchant}</td>

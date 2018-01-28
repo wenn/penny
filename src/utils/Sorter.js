@@ -11,8 +11,15 @@ class Sorter {
   }
 
   static toggleOrder(order) {
-    return order === "+" ? "-" : "+";
+    return order === Sorter.Order.DESC
+      ? Sorter.Order.ASC
+      : Sorter.Order.DESC;
   }
+
+  static Order = Object.freeze({
+    ASC: "+",
+    DESC: "-"
+  });
 }
 
-export default Sorter
+export default Sorter;

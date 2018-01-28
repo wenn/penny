@@ -17,21 +17,16 @@ class Table
 
     this.state = {
       mouse: new Mouse(undefined, Event.UNKNOWN),
-      sort: "+" + Spending.Enum.MERCHANT
+      sort: Sorter.Order.DESC
     };
 
     [this.addEvents, this.removeEvents] = this.newEvents(this);
   }
 
-  headerHandleClick(header) {
-    let current = this.state.sort;
-    let order = Sorter.toggleOrder(current.charAt(0));
-
-    this.setState({
-      sort: order + header
-    });
-
-    return this.render();
+  headerHandleClick() {
+    let order = Sorter.toggleOrder(this.state.sort);
+    this.setState({ sort: order });
+    this.render();
   }
 
   renderHeader(value, cls) {
@@ -39,7 +34,7 @@ class Table
       <Header
         value={value}
         className={cls}
-        onClick={() => this.headerHandleClick(value)}
+        onClick={this.headerHandleClick.bind(this)}
       />
     );
   }
@@ -69,8 +64,6 @@ class Table
   }
 
   handleMouseMove(e) {
-    e.preventDefault();
-
     const start = this.state.mouse.coord;
     const moved = new Coord(e.clientX, e.clientY);
     const boxStyle = this.selectionBoxDimension(start, moved);
@@ -89,11 +82,12 @@ class Table
 
   handleMouseEnter(e, spending) {
     if (this.state.mouse.event === Event.DOWN) {
-      spending.setSelected(true);
+      spending.setSelected(true)
       this.props.onSelect(spending);
     }
   }
 
+  // TODO, doesn't work too well.
   handleMouseLeave(e, spending) {
     if (this.state.mouse.event === Event.DOWN) {
 
@@ -155,12 +149,21 @@ class Table
 
   renderRecords(spendings) {
     return spendings
-      .sort(Sorter.sort(this.state.sort))
+      .sort((a, b) => {
+        const av = a.merchant + a.datetime.toString();
+        const ab = b.merchant + b.datetime.toString();
+
+        if (this.state.sort === "+") {
+          return av > ab ? 1 : -1;
+        }
+        else {
+          return av < ab ? 1 : -1;
+        }
+      })
       .map(spending => {
         return (
           <Record key={spending.hashCode()}
             value={spending}
-            onMouseOver={(e) => this.handleMouseLeave.bind(this)(e, spending)}
             onMouseEnter={(e) => this.handleMouseEnter.bind(this)(e, spending)}
             onClick={() => this.toggleSelect(spending)}
           />

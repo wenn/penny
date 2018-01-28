@@ -1,15 +1,17 @@
 import React from 'react';
 
 function Header(props) {
-  let title = String(props.value);
-  let decoratedTitle = title
+  const title = String(props.value);
+  const decoratedTitle = title
     .charAt(0)
     .toUpperCase()
     + title.slice(1);
 
+  const className = props.className + " noselect"
+
   return (
     <th
-      className={props.className}
+      className={className}
       onClick={() => props.onClick(props.value)}>
       {decoratedTitle}
     </th>
