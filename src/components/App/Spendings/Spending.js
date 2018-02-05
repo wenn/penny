@@ -24,9 +24,9 @@ class Spending
   }
 
   hashString() {
-    return this.datetime
+    return this.datetime.toString()
       + this.merchant
-      + this.amount
+      + this.amount.toString()
   }
 };
 

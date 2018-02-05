@@ -20,7 +20,8 @@ class Spendings
   }
 
   handleSelect(spending) {
-    const spendings = Object.assign({}, this.state.spendings);
+    // const spendings = Object.assign({}, this.state.spendings);
+    const spendings = this.state.spendings;
     spendings[spending.hashCode()] = spending;
     this.setState({ spendings: spendings });
 
@@ -28,7 +29,8 @@ class Spendings
   }
 
   render() {
-    const spendings = Object.assign({}, this.state.spendings);
+    // const spendings = Object.assign({}, this.state.spendings);
+    const spendings = this.state.spendings;
     const value = Object
       .keys(spendings)
       .map(k => spendings[k]);

@@ -8,6 +8,7 @@ import Header from "components/App/Spendings/Header";
 import Record from "components/App/Spendings/Record";
 import Box from "components/App/Spendings/SelectionBox";
 import { Event, Coord, Mouse } from "components/Mouse";
+import { hash } from "utils/Hashable"
 
 class Table
   extends React.Component {
@@ -17,15 +18,21 @@ class Table
 
     this.state = {
       mouse: new Mouse(undefined, Event.UNKNOWN),
-      sort: Sorter.Order.DESC
+      sortHeader: Spending.Enum.MERCHANT,
+      sortOrder: Sorter.Order.DESC
     };
 
     [this.addEvents, this.removeEvents] = this.newEvents(this);
   }
 
-  headerHandleClick() {
-    let order = Sorter.toggleOrder(this.state.sort);
-    this.setState({ sort: order });
+  headerHandleClick(header) {
+    const order = Sorter.toggleOrder(this.state.sortOrder);
+
+    this.setState({
+      sortOrder: order,
+      sortHeader: header
+    });
+
     this.render();
   }
 
@@ -34,7 +41,7 @@ class Table
       <Header
         value={value}
         className={cls}
-        onClick={this.headerHandleClick.bind(this)}
+        onClick={() => this.headerHandleClick.bind(this)(value)}
       />
     );
   }
@@ -148,23 +155,16 @@ class Table
   }
 
   renderRecords(spendings) {
-    return spendings
-      .sort((a, b) => {
-        const av = a.merchant + a.datetime.toString();
-        const ab = b.merchant + b.datetime.toString();
+    const header = this.state.sortHeader;
+    const order = this.state.sortOrder;
 
-        if (this.state.sort === "+") {
-          return av > ab ? 1 : -1;
-        }
-        else {
-          return av < ab ? 1 : -1;
-        }
-      })
+    return spendings
+      .sort(Sorter.sort(order + header))
       .map(spending => {
         return (
           <Record key={spending.hashCode()}
             value={spending}
-            onMouseEnter={(e) => this.handleMouseEnter.bind(this)(e, spending)}
+            // onMouseEnter={(e) => this.handleMouseEnter.bind(this)(e, spending)}
             onClick={() => this.toggleSelect(spending)}
           />
         );

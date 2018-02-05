@@ -3,14 +3,7 @@ const Hashable = base => class extends base {
 
   hashCode() {
     if (this._value === undefined) {
-      var hash = 0;
-      for (var i = 0; i < this.hashString().length; i++) {
-        var character = this.hashString().charCodeAt(i);
-        hash = ((hash << 5) - hash) + character;
-        hash = hash & hash; // Convert to 32bit integer
-      }
-
-      this._value = hash;
+      this._value = hash(this.hashString());
     }
 
     return this._value;
@@ -19,4 +12,16 @@ const Hashable = base => class extends base {
   hashString() { throw new Error("Not implemented") }
 }
 
-export default Hashable
+function hash(str) {
+  var _hash = 0;
+  for (var i = 0; i < str.length; i++) {
+    var character = str.charCodeAt(i);
+    _hash = ((_hash << 5) - _hash) + character;
+    _hash = _hash & _hash; // Convert to 32bit integer
+  }
+
+  return _hash;
+};
+
+export default Hashable;
+export { hash };

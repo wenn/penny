@@ -1,13 +1,17 @@
 class Sorter {
 
   static sort(key) {
-    let isDesc = /^-/.test(key);
-    let parsedKey = key.replace(/^[-+]/, "");
+    const toggleSort = /^-/.test(key) ? 1 : -1;
+    const parsedKey = key.replace(/^[-+]/, "");
 
-    return (a, b) =>
-      isDesc
-        ? (a[parsedKey] <= b[parsedKey] ? 1 : -1)
-        : (a[parsedKey] >= b[parsedKey] ? 1 : -1);
+    return (a, b) => {
+      if (a[parsedKey] < b[parsedKey]) return 1 * toggleSort;
+      if (a[parsedKey] > b[parsedKey]) return -1 * toggleSort;
+      if (a.hashCode() < b.hashCode()) return 1;
+      if (a.hashCode() > b.hashCode()) return -1;
+
+      return 0;
+    }
   }
 
   static toggleOrder(order) {
